@@ -2,6 +2,9 @@
 
 HotelPro is a comprehensive, production-grade hotel management platform built with the MERN stack (MongoDB, Express, React, Node.js) and an autonomous multi-agent architecture. The system streamlines end-to-end hospitality operations—ranging from guest room discovery, real-time availability tracking, and concurrency-safe double-booking prevention to staff front-desk check-in/out, automated housekeeping workflows, and administrative financial auditing.
 
+🌐 **Live Vercel Demo**: [https://spry-ridge-3ig18s4.tmp.now](https://spry-ridge-3ig18s4.tmp.now)  
+*(Claim to permanent Vercel account: [Claim Deployment](https://vercel.com/claim-deployment?code=119b5f8a-8bd2-49b8-a7b6-3b3acbdb8ac5))*
+
 ---
 
 ## 🔑 Demo & Seed Accounts
