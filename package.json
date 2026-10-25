@@ -1,0 +1,38 @@
+{
+  "name": "parth-HotelPro",
+  "version": "1.0.0",
+  "description": "HotelPro - Modern Hotel Management System with Multi-Agent Architecture",
+  "main": "server/server.js",
+  "scripts": {
+    "start": "node server/server.js",
+    "dev": "node --watch server/server.js",
+    "dev:server": "node --watch server/server.js",
+    "dev:client": "cd client && npm run dev",
+    "test": "node tests/test-runner.js",
+    "seed": "node server/config/seed.js",
+    "client": "cd client && npm run dev",
+    "lint": "node --check server/server.js",
+    "diagrams:generate": "node scripts/generate_diagrams.js",
+    "agents:run": "node -e \"const { orchestrator } = require('./agents'); orchestrator.runAutonomousCycle().then(r => console.log('Cycle completed:', JSON.stringify(r, null, 2))).catch(console.error);\""
+  },
+  "keywords": [
+    "hotel-management",
+    "multi-agent",
+    "mern",
+    "ponytail",
+    "express",
+    "jwt",
+    "booking"
+  ],
+  "author": "HotelPro Team",
+  "license": "MIT",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.21.2",
+    "jsonwebtoken": "^9.0.2",
+    "mime": "1.6.0",
+    "mongoose": "^8.8.2"
+  }
+}

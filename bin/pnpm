@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+export PATH="/home/parth/Random/prog/ALL projects/new hotel/bin:/home/parth/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$PATH"
+exec /home/parth/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin/fallback/pnpm "$@"

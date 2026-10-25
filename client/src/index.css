@@ -1,0 +1,53 @@
+/* Global styles on top of Bootstrap */
+:root {
+  --hotel-primary: #1a3c5e;
+  --hotel-accent: #c9a84c;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f8f9fa;
+}
+
+.navbar-brand {
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+.hero-section {
+  background: linear-gradient(135deg, var(--hotel-primary) 0%, #2d6a9f 100%);
+  min-height: 80vh;
+  display: flex;
+  align-items: center;
+}
+
+.card {
+  transition: box-shadow 0.2s ease;
+}
+
+.card:hover {
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
+}
+
+.btn-primary {
+  background-color: var(--hotel-primary);
+  border-color: var(--hotel-primary);
+}
+
+.btn-primary:hover {
+  background-color: #15304f;
+  border-color: #15304f;
+}
+
+.text-hotel {
+  color: var(--hotel-primary);
+}
+
+.bg-hotel {
+  background-color: var(--hotel-primary);
+}
+
+.badge-status-available { background-color: #198754; }
+.badge-status-occupied  { background-color: #dc3545; }
+.badge-status-cleaning  { background-color: #ffc107; color: #000; }
+.badge-status-maintenance { background-color: #6c757d; }
