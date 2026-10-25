@@ -123,6 +123,31 @@ The script captures screenshots of all guest, staff, and admin portals in 1280x7
 
 ---
 
+## ⚡ Free-Tier Vercel Deployment
+
+HotelPro is configured out-of-the-box for free-tier serverless deployment on Vercel:
+
+- **Serverless API Function (`api/index.js`):** Wraps the Express backend and models, automatically managing database connectivity (seamlessly connecting to MongoDB or falling back to the high-performance in-memory store and seeding demo accounts on cold boot).
+- **Static Frontend SPA (`vercel.json`):** Directs Vercel to compile and serve the Vite React frontend from `client/dist`, routing all `/api/(.*)` traffic to the serverless function and all frontend navigation to `/index.html`.
+- **Automated Build Scripts (`package.json`):** Features top-level `"build"` and `"vercel-build"` commands (`cd client && npm install && npm run build`).
+
+### Deploying to Vercel:
+1. **Via Vercel Web Dashboard:**
+   - Import your GitHub repository (`github.com/parth3500/parth-hotelpro`).
+   - Framework Preset: **Vite** or **Other**.
+   - Build Command: `npm run vercel-build` (detected automatically).
+   - Output Directory: `client/dist` (defined in `vercel.json`).
+   - (Optional) Set `MONGODB_URI` and `JWT_SECRET` in Environment Variables. If omitted, HotelPro runs gracefully in self-contained in-memory mode with preloaded demo data.
+   - Click **Deploy**.
+
+2. **Via Vercel CLI:**
+   ```bash
+   npm i -g vercel
+   vercel deploy --prod
+   ```
+
+---
+
 ## 📡 Core API Endpoints
 
 ### Authentication
