@@ -183,3 +183,59 @@ HotelPro is configured out-of-the-box for free-tier serverless deployment on Ver
 - `GET /api/admin/reports` — High-level telemetry, occupancy rates, and financial reports
 - `GET /api/admin/users` — List registered users
 - `PUT /api/admin/users/:id` — Update user role or account status
+
+
+---
+
+## ☁️ Deployment to Vercel (Free Hobby Tier)
+
+HotelPro is fully configured for zero-cost deployment on Vercel's Free Hobby Tier using the Vercel Web Dashboard (GitHub integration) or the Vercel CLI.
+
+### Required Environment Variables
+
+Configure these in your Vercel Project Settings (**Settings** → **Environment Variables**):
+
+| Variable Name | Recommended Value | Description |
+|---|---|---|
+| `MONGODB_URI` | `mongodb+srv://<user>:<password>@cluster0.mongodb.net/hotelpro?retryWrites=true&w=majority` | MongoDB Atlas connection string. In Atlas, ensure Network Access allows `0.0.0.0/0` (required for dynamic serverless IPs). |
+| `JWT_SECRET` | `openssl rand -hex 32` | 32+ character random string for signing JWT authentication tokens. |
+| `NODE_ENV` | `production` | Enables production mode and prevents stack trace leakage in API responses. |
+| `USE_MEMORY_DB` | `false` (or `true` if deploying without MongoDB Atlas) | If `true`, runs the built-in in-memory document store without connection timeout delays. |
+
+---
+
+### Option 1: One-Click Web Dashboard Import (Recommended)
+
+1. **Log in to Vercel:**
+   Visit [vercel.com](https://vercel.com) and sign in with your GitHub account.
+
+2. **Import Git Repository:**
+   - Click **Add New...** → **Project**.
+   - Under **Import Git Repository**, locate `parth3500/parth-hotelpro` and click **Import**.
+
+3. **Configure Project Settings:**
+   - **Framework Preset:** `Other` (or `Vite`)
+   - **Root Directory:** `./`
+   - **Build Command:** Toggle **Override** and enter:
+     ```bash
+     npm --prefix client install && npm --prefix client run build
+     ```
+   - **Output Directory:** `client/dist`
+
+4. **Add Environment Variables:**
+   Expand the **Environment Variables** panel and add `MONGODB_URI`, `JWT_SECRET`, and `NODE_ENV=production`.
+
+5. **Deploy:**
+   Click **Deploy**. Vercel will install dependencies, compile the Vite React SPA, bundle the `/api` serverless handler, and provide your live URL (e.g. `https://parth-hotelpro.vercel.app`).
+
+---
+
+### Option 2: CLI Deployment via `npx vercel --prod`
+
+```bash
+# 1. Log in to Vercel CLI
+npx vercel login
+
+# 2. Deploy directly to production
+npx vercel --prod
+```
