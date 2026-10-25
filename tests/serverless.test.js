@@ -181,6 +181,48 @@ async function runServerlessTests() {
     assert.strictEqual(res.data.success, false);
   });
 
+  // Test 10: Lifecycle guarantee - await serverlessHandler resolves only when response completes
+  await runTest('Serverless handler Promise resolves only after HTTP response stream finishes', async () => {
+    let responseEndedOnResolution = false;
+    const probeServer = http.createServer(async (req, res) => {
+      await serverlessHandler(req, res);
+      responseEndedOnResolution = (res.writableEnded === true || res.finished === true);
+    });
+
+    await new Promise(resPort => {
+      probeServer.listen(0, async () => {
+        const probePort = probeServer.address().port;
+        const probeRes = await fetch(`http://127.0.0.1:${probePort}/api/rooms`);
+        assert.strictEqual(probeRes.status, 200);
+        probeServer.close(resPort);
+      });
+    });
+
+    assert.strictEqual(
+      responseEndedOnResolution,
+      true,
+      'Handler promise must not resolve before res.writableEnded/finished is true'
+    );
+  });
+
+  // Test 11: Parallel concurrent requests to serverless entrypoint
+  await runTest('Concurrent serverless invocations execute cleanly without race conditions', async () => {
+    const promises = [
+      request('/health'),
+      request('/api/health'),
+      request('/api/rooms'),
+      request('/api/auth/login', {
+        method: 'POST',
+        body: { email: 'admin@hotelpro.com', password: 'password123' }
+      })
+    ];
+    const results = await Promise.all(promises);
+    assert.strictEqual(results[0].status, 200);
+    assert.strictEqual(results[1].status, 200);
+    assert.strictEqual(results[2].status, 200);
+    assert.strictEqual(results[3].status, 200);
+  });
+
   // Cleanup
   server.close();
 

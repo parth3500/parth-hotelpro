@@ -34,10 +34,27 @@ async function ensureInitialized() {
 /**
  * Vercel Serverless Function entry point.
  * Wraps Express application and ensures database is ready before processing the request.
+ * Returns a promise that only resolves when the response stream has completed or closed,
+ * preventing serverless runtimes from freezing the Lambda container prematurely.
  */
 const handler = async (req, res) => {
   await ensureInitialized();
-  return app(req, res);
+  if (res.writableEnded || res.finished) {
+    return;
+  }
+  return new Promise((resolve, reject) => {
+    res.once('finish', resolve);
+    res.once('close', resolve);
+    res.once('error', reject);
+    try {
+      app(req, res);
+      if (res.writableEnded || res.finished) {
+        resolve();
+      }
+    } catch (err) {
+      reject(err);
+    }
+  });
 };
 
 handler.app = app;
