@@ -24,10 +24,11 @@ export default function RoomListing() {
   }, [dispatch])
 
   const filteredRooms = rooms.filter((room) => {
-    const matchesType = filterType === 'all' || room.type?.toLowerCase() === filterType.toLowerCase()
+    const roomCategory = room.category || room.type || ''
+    const matchesType = filterType === 'all' || roomCategory.toLowerCase() === filterType.toLowerCase()
     const matchesSearch =
       (room.roomNumber && room.roomNumber.toLowerCase().includes(searchQuery.toLowerCase())) ||
-      (room.type && room.type.toLowerCase().includes(searchQuery.toLowerCase())) ||
+      (roomCategory && roomCategory.toLowerCase().includes(searchQuery.toLowerCase())) ||
       (room.description && room.description.toLowerCase().includes(searchQuery.toLowerCase()))
     return matchesType && matchesSearch
   })
@@ -110,7 +111,7 @@ export default function RoomListing() {
               <div className="card-body d-flex flex-column">
                 <div className="d-flex justify-content-between align-items-start mb-2">
                   <h5 className="card-title fw-bold mb-0">Room {room.roomNumber}</h5>
-                  <span className="badge bg-primary text-capitalize">{room.type || 'Standard'}</span>
+                  <span className="badge bg-primary text-capitalize">{room.category || room.type || 'Standard'}</span>
                 </div>
                 <p className="card-text text-muted small flex-grow-1">
                   {room.description || 'Spacious, well-appointed room featuring premium bedding and modern amenities.'}

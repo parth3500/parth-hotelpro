@@ -79,6 +79,34 @@ export default function Login() {
                 </button>
               </form>
 
+              {/* Demo Account Quick Select */}
+              <div className="mt-4 pt-3 border-top">
+                <p className="text-muted small fw-semibold text-center mb-2">Demo Accounts (Password: <code>password123</code> / <code>Test@123</code>)</p>
+                <div className="d-flex gap-2">
+                  <button
+                    type="button"
+                    className="btn btn-outline-secondary btn-sm flex-fill"
+                    onClick={() => setFormData({ email: 'admin@hotelpro.com', password: 'password123' })}
+                  >
+                    Admin
+                  </button>
+                  <button
+                    type="button"
+                    className="btn btn-outline-secondary btn-sm flex-fill"
+                    onClick={() => setFormData({ email: 'staff@hotelpro.com', password: 'password123' })}
+                  >
+                    Staff
+                  </button>
+                  <button
+                    type="button"
+                    className="btn btn-outline-secondary btn-sm flex-fill"
+                    onClick={() => setFormData({ email: 'guest@hotelpro.com', password: 'password123' })}
+                  >
+                    Guest
+                  </button>
+                </div>
+              </div>
+
               <div className="text-center mt-4">
                 <p className="small text-muted mb-0">
                   Don't have an account? <Link to="/register" className="fw-semibold">Register here</Link>

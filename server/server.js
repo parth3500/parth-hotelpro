@@ -39,7 +39,29 @@ app.get(['/health', '/api/health'], (req, res) => {
   });
 });
 
-// Mount Routes - both prefixed with /api and direct paths for flexible integration
+// Serve static client build if present
+const clientDist = path.join(__dirname, '../client/dist');
+if (require('fs').existsSync(clientDist)) {
+  app.use(express.static(clientDist));
+
+  // Single-Page Application (SPA) HTML fallback:
+  // For any browser GET request that accepts HTML and is not an API call, serve index.html
+  app.use((req, res, next) => {
+    const acceptsHtml = (req.headers.accept && req.headers.accept.includes('text/html')) || (req.accepts && req.accepts('html'));
+    if (
+      process.env.NODE_ENV !== 'test' &&
+      req.method === 'GET' &&
+      acceptsHtml &&
+      !req.path.startsWith('/api') &&
+      !req.path.startsWith('/health')
+    ) {
+      return res.sendFile(path.join(clientDist, 'index.html'));
+    }
+    next();
+  });
+}
+
+// Global API Middlewares & Routes
 app.use('/api/auth', authRoutes);
 app.use('/auth', authRoutes);
 app.use('/api', authRoutes); // supports POST /api/register, POST /api/login, etc.
@@ -69,30 +91,17 @@ app.use('/staff', staffRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/admin', adminRoutes);
 
-// Serve static client build if present
-const clientDist = path.join(__dirname, '../client/dist');
+// Catch-all SPA route for browser requests
 if (require('fs').existsSync(clientDist)) {
-  app.use(express.static(clientDist));
   app.get('*', (req, res, next) => {
     if (
-      process.env.NODE_ENV === 'test' ||
-      !req.headers.accept ||
-      !req.headers.accept.includes('text/html') ||
-      req.path.startsWith('/api') ||
-      req.path.startsWith('/auth') ||
-      req.path.startsWith('/rooms') ||
-      req.path.startsWith('/bookings') ||
-      req.path.startsWith('/payments') ||
-      req.path.startsWith('/reviews') ||
-      req.path.startsWith('/notifications') ||
-      req.path.startsWith('/services') ||
-      req.path.startsWith('/staff') ||
-      req.path.startsWith('/admin') ||
-      req.path.startsWith('/health')
+      process.env.NODE_ENV !== 'test' &&
+      !req.path.startsWith('/api') &&
+      !req.path.startsWith('/health')
     ) {
-      return next();
+      return res.sendFile(path.join(clientDist, 'index.html'));
     }
-    res.sendFile(path.join(clientDist, 'index.html'));
+    next();
   });
 }
 

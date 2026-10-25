@@ -119,7 +119,7 @@ router.get('/reports', async (req, res, next) => {
 });
 
 // PUT /users/:id (or /admin/users/:id) - Admin updates user role, status, or department
-router.put('/users/:id', sanitizeBody, async (req, res, next) => {
+router.put(['/users/:id', '/users/:id/role'], sanitizeBody, async (req, res, next) => {
   try {
     const user = await User.findById(req.params.id);
     if (!user) {

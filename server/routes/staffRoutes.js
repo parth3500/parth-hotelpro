@@ -61,6 +61,12 @@ router.get('/dashboard', authenticateToken, authorizeRoles('staff', 'admin'), as
           inProgress: inProgressServiceRequests,
           totalActive: pendingServiceRequests + inProgressServiceRequests
         }
+      },
+      metrics: {
+        occupancyRate: totalRooms > 0 ? Number(((occupiedRooms / totalRooms) * 100).toFixed(1)) : 0,
+        activeCheckins: checkedInGuests,
+        openServiceTickets: pendingServiceRequests + inProgressServiceRequests,
+        roomsCleaning: cleaningRooms
       }
     });
   } catch (err) {

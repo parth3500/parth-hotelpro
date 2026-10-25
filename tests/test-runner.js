@@ -652,6 +652,47 @@ async function runTests() {
     assert.strictEqual(res.data.success, false);
   });
 
+  // 15. Seed & Demo Account Authentication tests
+  const { seed } = require('../server/config/seed');
+  await seed();
+
+  for (const cred of [
+    { email: 'admin@hotelpro.com', role: 'admin' },
+    { email: 'staff@hotelpro.com', role: 'staff' },
+    { email: 'guest@hotelpro.com', role: 'guest' }
+  ]) {
+    await test(`Demo account ${cred.email} logs in with password123`, async () => {
+      const res = await request('/api/login', {
+        method: 'POST',
+        body: { email: cred.email, password: 'password123' }
+      });
+      assert.strictEqual(res.status, 200);
+      assert.strictEqual(res.data.success, true);
+      assert.strictEqual(res.data.user.role, cred.role);
+      assert.ok(res.data.token);
+    });
+
+    await test(`Demo account ${cred.email} logs in with Test@123`, async () => {
+      const res = await request('/api/login', {
+        method: 'POST',
+        body: { email: cred.email, password: 'Test@123' }
+      });
+      assert.strictEqual(res.status, 200);
+      assert.strictEqual(res.data.success, true);
+      assert.strictEqual(res.data.user.role, cred.role);
+      assert.ok(res.data.token);
+    });
+
+    await test(`Demo account ${cred.email} rejects wrong password with 401`, async () => {
+      const res = await request('/api/login', {
+        method: 'POST',
+        body: { email: cred.email, password: 'WrongPassword!999' }
+      });
+      assert.strictEqual(res.status, 401);
+      assert.strictEqual(res.data.success, false);
+    });
+  }
+
   // Close server
   await new Promise(resolve => server.close(resolve));
 

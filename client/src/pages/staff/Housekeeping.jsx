@@ -60,7 +60,7 @@ export default function Housekeeping() {
                   {rooms.map((r) => (
                     <tr key={r._id || r.id}>
                       <td className="fw-bold">Room {r.roomNumber}</td>
-                      <td className="text-capitalize">{r.type}</td>
+                      <td className="text-capitalize">{r.category || r.type || 'Standard'}</td>
                       <td>{r.floor || 1}</td>
                       <td>
                         <span className={`badge ${

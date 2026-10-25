@@ -62,19 +62,33 @@ function sleep(ms) {
 }
 
 async function run() {
+  if (fs.existsSync(FRAMES_DIR)) {
+    for (const file of fs.readdirSync(FRAMES_DIR)) {
+      if (file.endsWith('.png') || file.endsWith('.txt')) {
+        fs.unlinkSync(path.join(FRAMES_DIR, file));
+      }
+    }
+  }
+
   console.log('[Recorder] Logging in to fetch auth tokens...');
   const adminAuth = await postJson('http://localhost:5000/api/login', {
     email: 'admin@hotelpro.com',
-    password: 'Test@123'
+    password: 'password123'
   });
   const staffAuth = await postJson('http://localhost:5000/api/login', {
     email: 'staff@hotelpro.com',
-    password: 'Test@123'
+    password: 'password123'
   });
   const guestAuth = await postJson('http://localhost:5000/api/login', {
     email: 'guest@hotelpro.com',
-    password: 'Test@123'
+    password: 'password123'
   });
+
+  if (!adminAuth.token || !staffAuth.token || !guestAuth.token) {
+    console.error('[Recorder] Failed to authenticate all demo accounts:', { adminAuth, staffAuth, guestAuth });
+    process.exit(1);
+  }
+  console.log('[Recorder] Successfully authenticated admin, staff, and guest demo accounts.');
 
   const roomsRes = await getJson('http://localhost:5000/api/rooms');
   const firstRoomId = roomsRes.rooms && roomsRes.rooms[0] ? roomsRes.rooms[0]._id : '';
@@ -155,7 +169,7 @@ async function run() {
     mobile: false
   });
 
-  async function captureScene(filename, url, authData = null, waitMs = 1200) {
+  async function captureScene(filename, url, authData = null, waitMs = 1800) {
     console.log(`[Recorder] Capturing ${filename} -> ${url}`);
     if (authData) {
       // First go to origin to set localStorage
@@ -257,17 +271,18 @@ async function run() {
     '-i', concatList,
     '-vf', 'scale=1280:720:force_original_aspect_ratio=decrease,pad=1280:720:(ow-iw)/2:(oh-ih)/2:color=black,format=yuv420p',
     '-r', '25',
-    '-c:v', 'libx264',
+    '-c:v', 'libopenh264',
     '-pix_fmt', 'yuv420p',
     '-an', // NO AUDIO / WITHOUT VOICE
     OUTPUT_VIDEO
   ];
 
-  console.log('[Recorder] Running ffmpeg command...');
+  console.log('[Recorder] Running ffmpeg command with libopenh264...');
   const ffmpeg = spawn('ffmpeg', ffmpegCmd);
 
+  let ffmpegErr = '';
   ffmpeg.stderr.on('data', data => {
-    // console.log(data.toString());
+    ffmpegErr += data.toString();
   });
 
   ffmpeg.on('close', code => {

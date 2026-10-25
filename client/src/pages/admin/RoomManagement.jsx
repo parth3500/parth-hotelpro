@@ -168,7 +168,7 @@ export default function RoomManagement() {
                     {rooms.map((r) => (
                       <tr key={r._id || r.id}>
                         <td className="fw-bold">Room {r.roomNumber}</td>
-                        <td className="text-capitalize">{r.type}</td>
+                        <td className="text-capitalize">{r.category || r.type || 'Standard'}</td>
                         <td>${r.pricePerNight || r.basePrice || 120}</td>
                         <td>{r.capacity || 2} Guests</td>
                         <td>

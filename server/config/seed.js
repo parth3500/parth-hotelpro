@@ -48,7 +48,7 @@ async function findOrCreate(Model, query, data) {
 async function seed() {
   await connectDB();
 
-  const HASH = await bcrypt.hash('Test@123', 8);
+  const HASH = await bcrypt.hash('password123', 8);
 
   // 1. Hotel ──────────────────────────────────────────────────────────────────
   const { doc: hotel, created: hotelCreated } = await findOrCreate(
@@ -111,13 +111,19 @@ async function seed() {
   ];
   const createdUsers = {};
   for (const u of usersData) {
-    const { doc, created } = await findOrCreate(
-      User,
-      { email: u.email },
-      { ...u, password: HASH, status: 'active' }
-    );
+    let existing = await User.findOne({ email: u.email });
+    let doc;
+    if (existing) {
+      existing.password = HASH;
+      existing.status = 'active';
+      if (u.role) existing.role = u.role;
+      if (existing.save) await existing.save();
+      doc = existing;
+    } else {
+      doc = await User.create({ ...u, password: HASH, status: 'active' });
+    }
     createdUsers[u.role] = doc;
-    console.log(`[seed] User (${u.role}): ${created ? 'created' : 'exists'} — ${u.email}`);
+    console.log(`[seed] User (${u.role}): ${existing ? 'updated' : 'created'} — ${u.email}`);
   }
 
   // 5. Staff profile ──────────────────────────────────────────────────────────
