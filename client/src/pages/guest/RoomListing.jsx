@@ -103,7 +103,7 @@ export default function RoomListing() {
                 style={{
                   height: '180px',
                   backgroundColor: '#e9ecef',
-                  backgroundImage: `url(${room.imageUrl || 'https://images.unsplash.com/photo-1590490360182-c33d57733427?auto=format&fit=crop&w=600&q=80'})`,
+                  backgroundImage: `url(${room.imageUrl || '/rooms/room_standard.jpg'})`,
                   backgroundSize: 'cover',
                   backgroundPosition: 'center',
                 }}

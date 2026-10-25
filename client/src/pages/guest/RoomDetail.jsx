@@ -57,12 +57,12 @@ export default function RoomDetail() {
             style={{
               height: '380px',
               backgroundColor: '#e9ecef',
-              backgroundImage: `url(${room.imageUrl || 'https://images.unsplash.com/photo-1590490360182-c33d57733427?auto=format&fit=crop&w=1200&q=80'})`,
+              backgroundImage: `url(${room.imageUrl || '/rooms/room_standard.jpg'})`,
               backgroundSize: 'cover',
               backgroundPosition: 'center',
             }}
           ></div>
-          <h2 className="fw-bold mb-2">Room {room.roomNumber} — {room.type}</h2>
+          <h2 className="fw-bold mb-2">Room {room.roomNumber} — {room.category || room.type || 'Standard'}</h2>
           <p className="text-muted lead fs-6">{room.description || 'Modern luxury room equipped with premier comforts.'}</p>
 
           <h5 className="fw-bold mt-4 mb-3">Room Amenities & Features</h5>

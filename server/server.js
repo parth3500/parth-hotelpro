@@ -45,11 +45,10 @@ if (require('fs').existsSync(clientDist)) {
   app.use(express.static(clientDist));
 
   // Single-Page Application (SPA) HTML fallback:
-  // For any browser GET request that accepts HTML and is not an API call, serve index.html
+  // For any browser navigation GET request that accepts HTML and is not an API call, serve index.html
   app.use((req, res, next) => {
-    const acceptsHtml = (req.headers.accept && req.headers.accept.includes('text/html')) || (req.accepts && req.accepts('html'));
+    const acceptsHtml = req.headers.accept && req.headers.accept.includes('text/html');
     if (
-      process.env.NODE_ENV !== 'test' &&
       req.method === 'GET' &&
       acceptsHtml &&
       !req.path.startsWith('/api') &&
@@ -90,20 +89,6 @@ app.use('/staff', staffRoutes);
 
 app.use('/api/admin', adminRoutes);
 app.use('/admin', adminRoutes);
-
-// Catch-all SPA route for browser requests
-if (require('fs').existsSync(clientDist)) {
-  app.get('*', (req, res, next) => {
-    if (
-      process.env.NODE_ENV !== 'test' &&
-      !req.path.startsWith('/api') &&
-      !req.path.startsWith('/health')
-    ) {
-      return res.sendFile(path.join(clientDist, 'index.html'));
-    }
-    next();
-  });
-}
 
 // 404 Handler
 app.use((req, res) => {

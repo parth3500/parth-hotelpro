@@ -652,6 +652,38 @@ async function runTests() {
     assert.strictEqual(res.data.success, false);
   });
 
+  await test('Browser navigation to /rooms with text/html returns SPA index.html', async () => {
+    const res = await request('/rooms', {
+      headers: { 'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8' }
+    });
+    assert.strictEqual(res.status, 200);
+    assert.ok(typeof res.data === 'string' && res.data.includes('HotelPro'));
+  });
+
+  await test('Browser navigation to /admin/dashboard with text/html returns SPA index.html', async () => {
+    const res = await request('/admin/dashboard', {
+      headers: { 'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8' }
+    });
+    assert.strictEqual(res.status, 200);
+    assert.ok(typeof res.data === 'string' && res.data.includes('HotelPro'));
+  });
+
+  await test('Browser navigation to non-existent route with text/html returns SPA index.html', async () => {
+    const res = await request('/guest/non-existent-page', {
+      headers: { 'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8' }
+    });
+    assert.strictEqual(res.status, 200);
+    assert.ok(typeof res.data === 'string' && res.data.includes('HotelPro'));
+  });
+
+  await test('API route /api/unknown with text/html still returns 404 JSON (not HTML)', async () => {
+    const res = await request('/api/unknown-nonexistent-endpoint', {
+      headers: { 'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8' }
+    });
+    assert.strictEqual(res.status, 404);
+    assert.strictEqual(res.data.success, false);
+  });
+
   // 15. Seed & Demo Account Authentication tests
   const { seed } = require('../server/config/seed');
   await seed();
