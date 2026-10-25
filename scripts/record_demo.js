@@ -274,6 +274,12 @@ async function run() {
     '-c:v', 'libopenh264',
     '-pix_fmt', 'yuv420p',
     '-an', // NO AUDIO / WITHOUT VOICE
+    '-map_metadata', '-1',
+    '-map_metadata:s:v', '-1',
+    '-fflags', '+bitexact',
+    '-flags:v', '+bitexact',
+    '-metadata:s:v:0', 'language=0',
+    '-empty_hdlr_name', '1',
     OUTPUT_VIDEO
   ];
 
