@@ -19,17 +19,30 @@ export const HotelProvider = ({ children }) => {
     return saved ? JSON.parse(saved) : initialStaff;
   });
 
-  const [user, setUser] = useState({
-    name: "Alice Johnson",
-    email: "alice@example.com",
-    phone: "+1 (555) 234-5678",
-    avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=150&q=80",
-    role: "Guest" // Guest or Admin
+  const [token, setToken] = useState(() => {
+    return localStorage.getItem('hotelpro_token') || null;
+  });
+
+  const [user, setUser] = useState(() => {
+    const savedToken = localStorage.getItem('hotelpro_token');
+    const savedUser = localStorage.getItem('hotelpro_user');
+    if (savedToken && savedUser) {
+      try {
+        const parsed = JSON.parse(savedUser);
+        if (parsed && parsed.email !== 'alice@example.com') {
+          return parsed;
+        }
+      } catch {
+        // Fallback to null
+      }
+    }
+    return null; // Initially no account logged in
   });
 
   const [selectedRoom, setSelectedRoom] = useState(null);
   const [bookingDraft, setBookingDraft] = useState(null);
   const [toastMessage, setToastMessage] = useState(null);
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
 
   useEffect(() => {
     localStorage.setItem('hotelpro_rooms', JSON.stringify(rooms));
@@ -42,6 +55,45 @@ export const HotelProvider = ({ children }) => {
   useEffect(() => {
     localStorage.setItem('hotelpro_staff', JSON.stringify(staff));
   }, [staff]);
+
+  useEffect(() => {
+    if (user) {
+      localStorage.setItem('hotelpro_user', JSON.stringify(user));
+    } else {
+      localStorage.removeItem('hotelpro_user');
+    }
+  }, [user]);
+
+  // Validate active JWT session from real MongoDB backend if token exists
+  useEffect(() => {
+    let isMounted = true;
+    if (token) {
+      fetch('/api/auth/me', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      })
+        .then(res => res.json())
+        .then(data => {
+          if (isMounted && data.success && data.user) {
+            setUser(prev => ({
+              ...prev,
+              id: data.user.id || data.user._id,
+              name: data.user.name,
+              email: data.user.email,
+              role: data.user.role === 'admin' ? 'Admin' : 'Guest',
+              isRealAccount: true
+            }));
+          }
+        })
+        .catch(() => {
+          // Keep existing state if offline
+        });
+    }
+    return () => {
+      isMounted = false;
+    };
+  }, [token]);
 
   // Sync rooms from backend API if available
   useEffect(() => {
@@ -91,6 +143,82 @@ export const HotelProvider = ({ children }) => {
     setTimeout(() => setToastMessage(null), 4000);
   };
 
+  const loginUser = async (email, password) => {
+    try {
+      const res = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+      });
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        throw new Error(data.message || 'Login failed');
+      }
+      setToken(data.token);
+      localStorage.setItem('hotelpro_token', data.token);
+      const mappedRole = data.user.role === 'admin' ? 'Admin' : 'Guest';
+      const authenticatedUser = {
+        id: data.user.id || data.user._id,
+        name: data.user.name,
+        email: data.user.email,
+        phone: '+1 (555) 019-2834',
+        avatar: data.user.role === 'admin'
+          ? 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80'
+          : 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=150&q=80',
+        role: mappedRole,
+        isRealAccount: true,
+      };
+      setUser(authenticatedUser);
+      localStorage.setItem('hotelpro_user', JSON.stringify(authenticatedUser));
+      showToast(`Welcome back, ${data.user.name}! (Authenticated)`);
+      return { success: true, user: authenticatedUser };
+    } catch (err) {
+      showToast(err.message || 'Authentication error');
+      return { success: false, error: err.message };
+    }
+  };
+
+  const registerUser = async (name, email, password, role = 'customer') => {
+    try {
+      const res = await fetch('/api/auth/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, email, password, role }),
+      });
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        throw new Error(data.message || 'Registration failed');
+      }
+      setToken(data.token);
+      localStorage.setItem('hotelpro_token', data.token);
+      const mappedRole = data.user.role === 'admin' ? 'Admin' : 'Guest';
+      const authenticatedUser = {
+        id: data.user.id || data.user._id,
+        name: data.user.name,
+        email: data.user.email,
+        phone: '+1 (555) 019-2834',
+        avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=150&q=80',
+        role: mappedRole,
+        isRealAccount: true,
+      };
+      setUser(authenticatedUser);
+      localStorage.setItem('hotelpro_user', JSON.stringify(authenticatedUser));
+      showToast(`Real account created for ${data.user.name}!`);
+      return { success: true, user: authenticatedUser };
+    } catch (err) {
+      showToast(err.message || 'Registration error');
+      return { success: false, error: err.message };
+    }
+  };
+
+  const logoutUser = () => {
+    setToken(null);
+    localStorage.removeItem('hotelpro_token');
+    localStorage.removeItem('hotelpro_user');
+    setUser(null);
+    showToast("Signed out successfully.");
+  };
+
   const addBooking = (bookingData) => {
     const newBooking = {
       id: `BK-${Math.floor(1000 + Math.random() * 9000)}`,
@@ -114,9 +242,12 @@ export const HotelProvider = ({ children }) => {
     showToast(`Room "${newRoom.name}" added successfully.`);
 
     try {
+      const headers = { 'Content-Type': 'application/json' };
+      if (token) headers['Authorization'] = `Bearer ${token}`;
+
       await fetch('/api/rooms', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers,
         body: JSON.stringify({
           roomNumber: roomData.roomNumber || `RM-${Date.now().toString().slice(-4)}`,
           name: roomData.name,
@@ -157,8 +288,13 @@ export const HotelProvider = ({ children }) => {
   };
 
   const toggleUserRole = () => {
+    if (!user) {
+      setIsAuthModalOpen(true);
+      showToast("Please sign in or select a demo account.");
+      return;
+    }
     setUser(prev => {
-      const nextRole = prev.role === 'Guest' ? 'Admin' : 'Guest';
+      const nextRole = prev.role === 'Admin' ? 'Guest' : 'Admin';
       showToast(`Switched role to ${nextRole}`);
       return {
         ...prev,
@@ -169,7 +305,10 @@ export const HotelProvider = ({ children }) => {
 
   return (
     <HotelContext.Provider value={{
-      rooms, bookings, staff, user, setUser,
+      rooms, bookings, staff,
+      user, setUser, token,
+      loginUser, registerUser, logoutUser,
+      isAuthModalOpen, setIsAuthModalOpen,
       selectedRoom, setSelectedRoom,
       bookingDraft, setBookingDraft,
       toastMessage, showToast,

@@ -8,9 +8,9 @@ export const CheckoutPage = () => {
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
-    guestName: user.name,
-    guestEmail: user.email,
-    phone: user.phone || '+1 (555) 019-2834',
+    guestName: user?.name || '',
+    guestEmail: user?.email || '',
+    phone: user?.phone || '+1 (555) 019-2834',
     specialRequests: '',
     paymentMethod: 'Credit Card',
     cardNumber: '•••• •••• •••• 4242',

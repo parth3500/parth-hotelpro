@@ -9,6 +9,23 @@
   cursor: pointer;
 }
 
+/* Custom High-Contrast Dark Form Overrides */
+.form-control, .form-select {
+  background-color: #1a1b28 !important;
+  color: #ffffff !important;
+  border: 1px solid #3d4160 !important;
+}
+.form-control:focus, .form-select:focus {
+  background-color: #1a1b28 !important;
+  color: #ffffff !important;
+  border-color: #d4a855 !important;
+  box-shadow: 0 0 0 0.2rem rgba(212, 168, 85, 0.25) !important;
+}
+.form-control::placeholder {
+  color: #8b8ea8 !important;
+  opacity: 1 !important;
+}
+
 .counter {
   font-size: 16px;
   padding: 5px 10px;

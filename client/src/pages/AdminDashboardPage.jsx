@@ -3,7 +3,7 @@ import { useHotel } from '../context/HotelContext';
 import { Building2, Calendar, Users, DollarSign, Plus, Trash2, Star, XCircle } from 'lucide-react';
 
 export const AdminDashboardPage = () => {
-  const { rooms, bookings, staff, addRoom, deleteRoom, addStaff, deleteStaff, cancelBooking, showToast } = useHotel();
+  const { rooms, bookings, staff, addRoom, deleteRoom, addStaff, deleteStaff, cancelBooking, showToast, user, setIsAuthModalOpen } = useHotel();
   const [activeTab, setActiveTab] = useState('overview');
 
   // New Room Form State
@@ -29,6 +29,42 @@ export const AdminDashboardPage = () => {
     email: '',
     status: 'Active'
   });
+
+  if (user?.role !== 'Admin') {
+    return (
+      <div className="bg-dark text-white min-vh-100 py-5 mt-5 d-flex align-items-center justify-content-center text-center">
+        <div className="card bg-dark border border-secondary rounded-4 p-5 shadow-lg" style={{ maxWidth: '540px', width: '92%' }}>
+          <div className="d-flex justify-content-center mb-3">
+            <div className="p-3 rounded-circle" style={{ backgroundColor: 'rgba(212,168,85,0.15)', border: '1px solid #d4a855' }}>
+              <Building2 size={42} style={{ color: '#d4a855' }} />
+            </div>
+          </div>
+          <h3 className="fw-bold mb-2 text-white" style={{ fontFamily: 'Georgia, serif' }}>Administrator Access Required</h3>
+          <p className="text-muted mb-4" style={{ fontSize: '0.92rem' }}>
+            The Admin Management Console is restricted to authorized hotel staff and administrators.
+          </p>
+          <div className="p-3 rounded-3 mb-4 text-start small border border-secondary" style={{ backgroundColor: '#181926' }}>
+            <span className="text-warning fw-bold d-block mb-2">Use Git Demo Administrator Credentials:</span>
+            <div className="d-flex justify-content-between text-muted py-1">
+              <span className="text-warning fw-semibold">Admin Email:</span>
+              <span className="text-white font-monospace">admin@hotelpro.com</span>
+            </div>
+            <div className="d-flex justify-content-between text-muted py-1">
+              <span className="text-warning fw-semibold">Password:</span>
+              <span className="text-white font-monospace">admin123</span>
+            </div>
+          </div>
+          <button
+            onClick={() => setIsAuthModalOpen(true)}
+            className="btn py-2 fw-bold w-100 shadow"
+            style={{ backgroundColor: '#d4a855', color: '#000', borderRadius: '10px' }}
+          >
+            Sign In with Admin Demo Account
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   const totalRevenue = bookings.filter(b => String(b.status).toLowerCase() !== 'cancelled').reduce((acc, b) => acc + (Number(b.totalPrice) || 0), 0);
   const activeBookingsCount = bookings.filter(b => String(b.status).toLowerCase() === 'confirmed').length;

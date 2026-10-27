@@ -8,23 +8,32 @@ const seedDefaultsIfEmpty = async () => {
     const Room = require('../models/Room');
     const User = require('../models/User');
 
+    // Ensure demo accounts always exist
+    const adminExists = await User.findOne({ email: 'admin@hotelpro.com' });
+    if (!adminExists) {
+      await User.create({
+        name: 'Admin User',
+        email: 'admin@hotelpro.com',
+        password: 'admin123',
+        role: 'admin',
+      });
+      console.log('Seeded demo Admin account: admin@hotelpro.com / admin123');
+    }
+
+    const customerExists = await User.findOne({ email: 'customer@hotelpro.com' });
+    if (!customerExists) {
+      await User.create({
+        name: 'Demo Customer',
+        email: 'customer@hotelpro.com',
+        password: 'customer123',
+        role: 'customer',
+      });
+      console.log('Seeded demo Customer account: customer@hotelpro.com / customer123');
+    }
+
     const count = await Room.countDocuments();
     if (count === 0) {
-      console.log('Database empty. Seeding initial rooms and users...');
-      await User.create([
-        {
-          name: 'Admin User',
-          email: 'admin@hotelpro.com',
-          password: 'admin123',
-          role: 'admin',
-        },
-        {
-          name: 'John Doe',
-          email: 'customer@hotelpro.com',
-          password: 'customer123',
-          role: 'customer',
-        },
-      ]);
+      console.log('Database empty. Seeding initial rooms...');
 
       await Room.insertMany([
         {
