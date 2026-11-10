@@ -1,0 +1,30 @@
+{
+  "name": "HotelPro",
+  "version": "1.0.0",
+  "ponytail": {
+    "intensity": "full",
+    "mode": "minimalist-production",
+    "principles": [
+      "yagni",
+      "stdlib-first",
+      "native-platform",
+      "no-bloat",
+      "clean-separation-of-concerns",
+      "multi-agent-autonomous-execution"
+    ],
+    "structure": {
+      "agentsDirectory": "./agents",
+      "tasksDirectory": "./tasks",
+      "serverDirectory": "./server",
+      "clientDirectory": "./client",
+      "testsDirectory": "./tests"
+    },
+    "agents": [
+      "BookingAgent",
+      "HousekeepingAgent",
+      "ConciergeAgent",
+      "BillingAgent",
+      "OperationsAgent"
+    ]
+  }
+}
