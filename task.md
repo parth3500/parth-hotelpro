@@ -8,7 +8,8 @@
 1. [x] Enhance HotelPro UI with Skiper UI & Animaster Lib glassmorphism, Framer Motion, and glow effects.
 2. [x] Clean up agent/task/hotel.txt files as requested.
 3. [x] Configure git user authorship as Parth Dubey (parthdubey0766@gmail.com).
-4. [ ] **Next Target:** `https://github.com/parth3500/sensei` — UI enhancement with Skiper UI & Animaster Lib and atomic daily commits.
+4. [x] **Next Target noted:** `https://github.com/parth3500/sensei`.
+5. [ ] **New Target (from image):** Turnitout — Plagiarism & AI Footprint Removal Engine (Engine v1.9.2, 100% Zero AI).
 5. [ ] Daily atomic git commits & pushes for ongoing changes to build the contribution graph.
 
 ## Notes & Rules
