@@ -10,7 +10,8 @@
 3. [x] Configure git user authorship as Parth Dubey (parthdubey0766@gmail.com).
 4. [x] **Next Target noted:** `https://github.com/parth3500/sensei`.
 5. [x] **New Target (from image):** Turnitout — Plagiarism & AI Footprint Removal Engine (Engine v1.9.2, 100% Zero AI).
-6. [ ] **New Target (from image):** Astryx — Meta's open-source React 19+ & StyleX design system (150+ accessible components, brand-level theming).
+6. [x] **New Target (from image):** Astryx — Meta's open-source React 19+ & StyleX design system (150+ accessible components, brand-level theming).
+7. [ ] **New Target (from image):** PhotoC Mobile Companion — Rust-based mobile companion app for PhotoC desktop (P2P pairing, QR code, Tauri/Rust backend, image resize-then-merge pipeline).
 5. [ ] Daily atomic git commits & pushes for ongoing changes to build the contribution graph.
 
 ## Notes & Rules
